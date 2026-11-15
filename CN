@@ -1,0 +1,623 @@
+PRACTICAL 2 – TCP ECHO CLIENT–SERVER PROGRAM
+
+Aim: To implement TCP client-server communication in which the server returns the message received from the client.
+Server program – server1271.c
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define PORT 10271
+#define BUF_SIZE 1024
+
+int main()
+{
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    char buffer[BUF_SIZE];
+    int addrlen = sizeof(address);
+
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd == -1) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("Bind failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+
+    if (listen(server_fd, 3) < 0) {
+        perror("Listen failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("TCP Echo Server listening on port %d...\n", PORT);
+    new_socket = accept(server_fd, (struct sockaddr *)&address,
+                        (socklen_t *)&addrlen);
+    if (new_socket < 0) {
+        perror("Accept failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+
+    while (1) {
+        memset(buffer, 0, BUF_SIZE);
+        int bytes = read(new_socket, buffer, BUF_SIZE);
+        if (bytes <= 0)
+            break;
+
+        printf("Received: %s", buffer);
+        send(new_socket, buffer, bytes, 0);
+    }
+
+    close(new_socket);
+    close(server_fd);
+    return 0;
+}
+Client program – client1271.c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+
+#define PORT 10271
+#define BUF_SIZE 1024
+
+int main()
+{
+    int sock;
+    struct sockaddr_in server;
+    char buffer[BUF_SIZE];
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(PORT);
+    server.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+
+    connect(sock, (struct sockaddr *)&server, sizeof(server));
+
+    while (1) {
+        printf("Enter message: ");
+        if (fgets(buffer, BUF_SIZE, stdin) == NULL)
+            break;
+
+        send(sock, buffer, strlen(buffer), 0);
+        memset(buffer, 0, BUF_SIZE);
+        int bytes = read(sock, buffer, BUF_SIZE);
+        if (bytes <= 0)
+            break;
+
+        printf("Echo from server: %s", buffer);
+    }
+
+    close(sock);
+    return 0;
+}
+
+Execution: Open two terminals. In Terminal 1, save and compile the server, then run it. In Terminal 2, save and compile the client, then run it.
+gcc server1271.c -o server\n./server
+gcc client1271.c -o client\n./client
+Input: Type a message in the client terminal, for example: Hello Server!
+Output: Server terminal: TCP Echo Server listening on port 10271... and Received: Hello Server!\nClient terminal: Echo from server: Hello Server!
+Note: The practical screenshot uses port 10271. The client destination is set to the local machine (127.0.0.1) for running both programs on the same computer.
+
+
+
+PRACTICAL 3 – TCP Client
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <netinet/in.h>
+
+#define PORT 10275
+#define BUF_SIZE 1024
+
+int main()
+{
+    int sock;
+    struct sockaddr_in server;
+    char buffer[BUF_SIZE];
+
+    // Create socket
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons(PORT);
+    server.sin_addr.s_addr = INADDR_ANY;
+
+    connect(sock, (struct sockaddr *)&server, sizeof(server));
+
+    while (1)
+    {
+        printf("Enter message: ");
+        fgets(buffer, BUF_SIZE, stdin);
+
+        send(sock, buffer, strlen(buffer), 0);
+
+        memset(buffer, 0, BUF_SIZE);
+        read(sock, buffer, BUF_SIZE);
+
+        printf("Echo from server: %s", buffer);
+    }
+
+    close(sock);
+
+    return 0;
+}
+
+
+
+
+PRACTICAL 4 – UDP SERVER PROGRAM
+
+Aim: To create a UDP server that receives a message from a client and sends a response.
+Server program – UdpServer_271.c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PORT 8080
+
+int main()
+{
+    int server_socket;
+    char buffer[1024];
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t client_len = sizeof(client_addr);
+
+    server_socket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (server_socket < 0) {
+        perror("Socket creation failed");
+        return 1;
+    }
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
+
+    if (bind(server_socket, (struct sockaddr *)&server_addr,
+             sizeof(server_addr)) < 0) {
+        perror("Bind failed");
+        close(server_socket);
+        return 1;
+    }
+
+    printf("UDP Server is running on port %d...\n", PORT);
+
+    int n = recvfrom(server_socket, buffer, sizeof(buffer)-1, 0,
+                     (struct sockaddr *)&client_addr, &client_len);
+    if (n < 0) {
+        perror("Receive failed");
+        close(server_socket);
+        return 1;
+    }
+
+    buffer[n] = '\0';
+    printf("Message from Client: %s\n", buffer);
+
+    char response[] = "Hello from UDP Server";
+    sendto(server_socket, response, strlen(response), 0,
+           (struct sockaddr *)&client_addr, client_len);
+
+    close(server_socket);
+    return 0;
+}
+
+Execution: Open Terminal 1, save the program and execute:
+gcc UdpServer_271.c -o udpserver\n./udpserver
+Input: The server receives the message sent by the client. Example: Hello UDP Server
+Output: UDP Server is running on port 8080...\nMessage from Client: Hello UDP Server
+
+
+
+
+PRACTICAL 5 – UDP CLIENT PROGRAM
+
+Aim: To create a UDP client that sends a message to the server and receives the server response.
+Client program – UdpClient_271.c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+int main()
+{
+    int sockfd;
+    char message[1024], buffer[1024];
+    struct sockaddr_in serverAddr;
+    socklen_t addr_size = sizeof(serverAddr);
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+        printf("Socket creation failed\n");
+        return 1;
+    }
+
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(8080);
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    printf("Enter message: ");
+    fgets(message, sizeof(message), stdin);
+
+    sendto(sockfd, message, strlen(message), 0,
+           (struct sockaddr *)&serverAddr, sizeof(serverAddr));
+
+    int n = recvfrom(sockfd, buffer, sizeof(buffer)-1, 0,
+                     (struct sockaddr *)&serverAddr, &addr_size);
+    if (n < 0) {
+        printf("Receive failed\n");
+        close(sockfd);
+        return 1;
+    }
+
+    buffer[n] = '\0';
+    printf("Server Response: %s\n", buffer);
+
+    close(sockfd);
+    return 0;
+}
+
+Execution: Keep the UDP server running in Terminal 1. Open Terminal 2, save and execute the client:
+gcc UdpClient_271.c -o udpclient\n./udpclient
+Input: Enter message: Hello UDP Server
+Output: Client terminal: Server Response: Hello from UDP Server\nServer terminal: Message from Client: Hello UDP Server
+Note: Run the server before starting the client. Both programs use port 8080 and the client connects to 127.0.0.1.
+
+
+
+PRACTICAL 6 – DNS ANALYSIS USING WIRESHARK
+
+Aim: To capture and analyse DNS query and response packets using Wireshark.
+1. Open Wireshark on Windows.
+2. Double-click Wi-Fi to start capturing packets.
+3. Open Command Prompt (CMD).
+4. Execute these commands:
+   ipconfig /displaydns
+   nslookup google.com
+5. Return to Wireshark and enter the display filter:
+   dns
+6. Select a Standard query A google.com packet.
+7. Expand Domain Name System and examine the transaction ID, flags, and query.
+8. Select the corresponding Standard query response and examine the returned IP address.
+9. Click the red Stop button and save the capture if required.
+Result: Successfully captured and analyzed DNS query and response packets. 
+
+
+
+
+PRACTICAL 7 – HTTP ANALYSIS USING WIRESHARK
+
+Aim: To capture and analyse HTTP request and response packets using Wireshark.
+Part A — DNS
+1. Open Wireshark and start capturing on Wi-Fi.
+2. Open CMD and execute:
+   nslookup neverssl.com
+3. Apply the Wireshark filter:
+   dns
+4. Select the DNS query and response packets.
+5. Expand Domain Name System and examine the fields.
+Part B — HTTP
+6. Clear the DNS filter (keep capturing).
+7. Open http://neverssl.com in your browser.
+8. Apply the filter:
+   http
+9. Select a GET / HTTP/1.1 or GET /online/ HTTP/1.1 packet.
+10. Expand Hypertext Transfer Protocol and examine GET, Host, User-Agent, and HTTP version.
+11. Select the corresponding HTTP/1.1 200 OK response and examine its status code and headers.
+12. Stop capturing and save if required.
+Result: Successfully captured and analyzed DNS and HTTP packets, including HTTP GET requests and server responses.
+
+Remember for your exam:
+- nslookup → Generate DNS query
+- ipconfig /displaydns → View DNS cache
+- dns → Wireshark DNS filter
+- http → Wireshark HTTP filter
+- GET → Client requests a webpage
+- 200 OK → Server successfully responds 
+
+
+
+PRACTICAL 8 – SLIDING WINDOW PROTOCOL SIMULATION (GO-BACK-N)
+
+Aim: To simulate the Go-Back-N sliding window protocol and display the frames sent and acknowledgements received.
+Program – slidingwindow.c
+#include <stdio.h>
+#define MAX_FRAMES 50
+
+void receiver(int frames[], int start, int window_size)
+{
+    for (int i = start; i < start + window_size; i++)
+        printf("Received frame: %d, sending ACK: %d\n",
+               frames[i], frames[i] + 1);
+}
+
+void sender(int frames[], int n, int window_size)
+{
+    int base = 0;
+    char choice;
+
+    while (base < n) {
+        printf("\nSender window: ");
+        for (int i = base; i < base + window_size && i < n; i++)
+            printf("[%d] ", frames[i]);
+
+        printf("\nSending frames...\n");
+        for (int i = base; i < base + window_size && i < n; i++)
+            printf("Sent frame: %d\n", frames[i]);
+
+        printf("\nSimulating receiver...\n");
+        int count = (base + window_size > n) ? n - base : window_size;
+        receiver(frames, base, count);
+
+        printf("\nDid all frames receive correctly? (y/n): ");
+        scanf(" %c", &choice);
+
+        if (choice == 'y' || choice == 'Y')
+            base += window_size;
+        else
+            printf("Resending from frame %d...\n", frames[base]);
+    }
+    printf("\nAll frames sent successfully!\n");
+}
+
+int main()
+{
+    int n, window_size;
+    int frames[MAX_FRAMES];
+
+    printf("Sliding Window Protocol Simulation (Go-Back-N)\n");
+    printf("Enter number of frames to send (max 50): ");
+    scanf("%d", &n);
+
+    if (n <= 0 || n > MAX_FRAMES) {
+        printf("Invalid number of frames.\n");
+        return 0;
+    }
+
+    printf("Enter window size: ");
+    scanf("%d", &window_size);
+
+    if (window_size <= 0 || window_size > n) {
+        printf("Invalid window size.\n");
+        return 0;
+    }
+
+    for (int i = 0; i < n; i++)
+        frames[i] = i;
+
+    sender(frames, n, window_size);
+    return 0;
+}
+
+Execution: In the terminal, save the program and compile/run it:
+gcc slidingwindow.c -o slidingwindow\n./slidingwindow
+Input: Example: number of frames = 8; window size = 3. Enter y when asked whether all frames were received correctly.
+Output: Frames are sent in windows [0][1][2], [3][4][5] and [6][7]. The receiver displays ACK values 1 through 8. The program then displays All frames sent successfully!
+
+
+
+
+
+PRACTICAL 9A – LEAKY BUCKET 
+Aim: To simulate the Leaky Bucket and Token Bucket algorithms.
+A. Leaky Bucket – leakybucket_271.c
+#include <stdio.h>
+
+int main()
+{
+    int bucket_size, rate, incoming, stored = 0, n;
+
+    printf("Leaky Bucket Algorithm Simulation\n");
+    printf("Enter bucket size (capacity): ");
+    scanf("%d", &bucket_size);
+    printf("Enter outgoing rate: ");
+    scanf("%d", &rate);
+    printf("Enter number of packets (time units): ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        printf("\nTime unit %d:\n", i + 1);
+        printf("Enter number of incoming packets: ");
+        scanf("%d", &incoming);
+
+        if (incoming + stored > bucket_size) {
+            printf("Overflow! Packets lost: %d\n",
+                   incoming + stored - bucket_size);
+            stored = bucket_size;
+        } else {
+            stored += incoming;
+        }
+
+        if (stored >= rate) {
+            printf("Packets sent: %d\n", rate);
+            stored -= rate;
+        } else {
+            printf("Packets sent: %d\n", stored);
+            stored = 0;
+        }
+
+        printf("Packets remaining in bucket: %d\n", stored);
+    }
+
+    printf("\nDraining remaining packets...\n");
+    while (stored > 0) {
+        if (stored >= rate) {
+            printf("Packets sent: %d\n", rate);
+            stored -= rate;
+        } else {
+            printf("Packets sent: %d\n", stored);
+            stored = 0;
+        }
+        printf("Packets left in bucket: %d\n", stored);
+    }
+
+    printf("Simulation complete.\n");
+    return 0;
+}
+
+Execution: Save the program and execute:
+gcc leakybucket_271.c -o leakybucket\n./leakybucket
+Input: Example from the practical: bucket capacity = 10, outgoing rate = 4, time units = 5; incoming packets = 8, 3, 7, 2, 6.
+Output: For each time unit, the program displays packets sent and packets remaining in the bucket. It reports overflow if incoming packets exceed the available capacity, then drains remaining packets.
+
+
+
+PRACTICAL 9 B - TOKEN BUCKET ALGORITHMS
+
+B. Token Bucket – tokenbucket_271.c
+
+#include <stdio.h>
+
+int main()
+{
+    int bucket_size, rate, tokens = 0, incoming, n;
+
+    printf("Token Bucket Algorithm Simulation\n");
+    printf("Enter bucket size (capacity): ");
+    scanf("%d", &bucket_size);
+    printf("Enter token generation rate: ");
+    scanf("%d", &rate);
+    printf("Enter number of packets (time units): ");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        printf("\nTime unit %d:\n", i + 1);
+        tokens += rate;
+        if (tokens > bucket_size)
+            tokens = bucket_size;
+
+        printf("Enter number of packets to send: ");
+        scanf("%d", &incoming);
+
+        if (tokens >= incoming) {
+            printf("Packets sent: %d\n", incoming);
+            tokens -= incoming;
+        } else {
+            printf("Only %d tokens available, packets sent: %d, packets dropped: %d\n",
+                   tokens, tokens, incoming - tokens);
+            tokens = 0;
+        }
+
+        printf("Tokens left: %d\n", tokens);
+    }
+
+    printf("\nSimulation complete.\n");
+    return 0;
+}
+
+Execution: Save the program and execute:
+gcc tokenbucket_271.c -o tokenbucket\n./tokenbucket
+Input: Example from the practical: bucket capacity = 10, token generation rate = 4, time units = 5; packets to send = 2, 6, 3, 8, 1.
+Output: The program displays packets sent, packets dropped (if tokens are insufficient) and tokens left after each time unit.
+
+
+
+
+PRACTICAL 10 – DISTANCE VECTOR ROUTING ALGORITHM
+
+Aim: To implement the Distance Vector Routing algorithm and display the final routing table for each node.
+Program – exp10_271.c
+#include <stdio.h>
+#define MAX_NODES 10
+#define INF 9999
+
+struct Node {
+    int dist[MAX_NODES];
+    int nextHop[MAX_NODES];
+};
+
+int main()
+{
+    int cost[MAX_NODES][MAX_NODES];
+    struct Node rt[MAX_NODES];
+    int nodes, i, j, k, updated;
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &nodes);
+
+    printf("Enter cost matrix (use 999 for no connection):\n");
+    for (i = 0; i < nodes; i++) {
+        for (j = 0; j < nodes; j++) {
+            scanf("%d", &cost[i][j]);
+            if (cost[i][j] == 999)
+                cost[i][j] = INF;
+        }
+    }
+
+    for (i = 0; i < nodes; i++) {
+        for (j = 0; j < nodes; j++) {
+            rt[i].dist[j] = cost[i][j];
+            if (i == j)
+                rt[i].nextHop[j] = i;
+            else if (cost[i][j] < INF)
+                rt[i].nextHop[j] = j;
+            else
+                rt[i].nextHop[j] = -1;
+        }
+    }
+
+    do {
+        updated = 0;
+        for (i = 0; i < nodes; i++) {
+            for (j = 0; j < nodes; j++) {
+                for (k = 0; k < nodes; k++) {
+                    if (cost[i][k] >= INF || rt[k].dist[j] >= INF)
+                        continue;
+
+                    int newDistance = cost[i][k] + rt[k].dist[j];
+                    if (newDistance < rt[i].dist[j]) {
+                        rt[i].dist[j] = newDistance;
+                        rt[i].nextHop[j] = k;
+                        updated = 1;
+                    }
+                }
+            }
+        }
+    } while (updated);
+
+    printf("\n========== FINAL ROUTING TABLES ==========\n");
+    for (i = 0; i < nodes; i++) {
+        printf("\nRouting Table for Node %d\n", i);
+        printf("---------------------------------\n");
+        printf("Destination\tNext Hop\tDistance\n");
+
+        for (j = 0; j < nodes; j++) {
+            printf("%d\t\t", j);
+            if (rt[i].nextHop[j] == -1)
+                printf("-\t\t");
+            else
+                printf("%d\t\t", rt[i].nextHop[j]);
+
+            if (rt[i].dist[j] >= INF)
+                printf("INF\n");
+            else
+                printf("%d\n", rt[i].dist[j]);
+        }
+    }
+    return 0;
+}
+
+Execution: Save the program and compile/run it:
+gcc exp10_271.c -o exp10_271\n./exp10_271
+Input: Number of nodes = 3. Enter the cost matrix:
+0 2 7\n2 0 1\n7 1 0
+Output: The program displays the final routing table for Node 0, Node 1 and Node 2, showing Destination, Next Hop and Distance.
+Expected final distances: Node 0: to 0 = 0, to 1 = 2, to 2 = 3. Node 1: to 0 = 2, to 1 = 0, to 2 = 1. Node 2: to 0 = 3, to 1 = 1, to 2 = 0.
