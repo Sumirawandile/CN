@@ -1,0 +1,799 @@
+Practical 1. JavaScript Basics
+Aim: To demonstrate inline, internal and external JavaScript, use console methods, and display student information with a welcome message.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef4f8;
+            margin: 0;
+            padding: 35px;
+            color: #263746;
+        }
+        .container {
+            max-width: 430px;
+            margin: 25px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #cbd5df;
+        }
+        h2 { color: #24627a; text-align: center; }
+        input {
+            width: 95%;
+            padding: 9px;
+            margin: 7px 0 14px;
+            border: 1px solid #aab8c2;
+            border-radius: 5px;
+        }
+        button {
+            background: #24627a;
+            color: white;
+            border: 0;
+            padding: 10px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #result { color: #24627a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome Page</h2>
+        <label>Name:</label>
+        <input type="text" id="name">
+        <label>Age:</label>
+        <input type="number" id="age">
+        <button onclick="showMessage()">Submit</button>
+        <h3 id="result"></h3>
+    </div>
+    <script>
+        console.log("Welcome to JavaScript");
+        console.log("Student Information Page");
+        console.warn("This is a warning message");
+
+        function showMessage() {
+            let name = document.getElementById("name").value;
+            let age = document.getElementById("age").value;
+            document.getElementById("result").innerHTML =
+                "Welcome " + name + "! Your age is " + age;
+            console.log("Name: " + name);
+            console.log("Age: " + age);
+            alert("Welcome " + name);
+        }
+    </script>
+</body>
+</html>
+Additional file / code
+External JavaScript file (script.js)
+function showMessage() {
+    let name = document.getElementById("name").value;
+    let age = document.getElementById("age").value;
+    document.getElementById("result").innerHTML =
+        "Welcome " + name + "! Your age is " + age;
+    console.log("Name: " + name);
+    console.log("Age: " + age);
+    alert("Welcome " + name);
+}
+
+
+
+Practical 2. Variables and ES6 Features
+Aim: To demonstrate var, let, const, template literals and destructuring by creating a billing calculator.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff6e9;
+            color: #493a2c;
+            padding: 25px;
+        }
+        .bill-box {
+            max-width: 440px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 25px;
+            border: 1px solid #ead5b9;
+            border-radius: 12px;
+        }
+        h2 { color: #a65d24; text-align: center; }
+        input {
+            width: 95%;
+            padding: 9px;
+            margin: 7px 0 12px;
+            border: 1px solid #d8b995;
+            border-radius: 5px;
+        }
+        button {
+            background: #a65d24;
+            color: white;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 5px;
+        }
+        #result { line-height: 1.7; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="bill-box">
+        <h2>My Shop – Billing</h2>
+        Product Name: <input type="text" id="name">
+        Price: <input type="number" id="price">
+        Quantity: <input type="number" id="quantity">
+        <button onclick="calculateBill()">Calculate Bill</button>
+        <h3 id="result"></h3>
+    </div>
+    <script>
+        var shopName = "My Shop";
+        function calculateBill() {
+            const name = document.getElementById("name").value;
+            const price = Number(document.getElementById("price").value);
+            const quantity = Number(document.getElementById("quantity").value);
+            const [itemName, itemPrice, itemQuantity] = [name, price, quantity];
+            let total = itemPrice * itemQuantity;
+            document.getElementById("result").innerHTML =
+                `${shopName}<br>Product: ${itemName}<br>Total Bill: ₹${total}`;
+        }
+    </script>
+</body>
+</html>
+
+
+
+Practical 3. Control Structures and Form Validation
+Aim: To implement JavaScript control structures and form validation by creating a student grading system based on user-entered marks.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grading System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #edf7ef;
+            color: #294333;
+            padding: 30px;
+        }
+        .grade-card {
+            max-width: 420px;
+            margin: 25px auto;
+            padding: 25px;
+            background: white;
+            border-left: 6px solid #4b9564;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px #d1e2d5;
+        }
+        h2 { color: #32734a; }
+        input { padding: 9px; border: 1px solid #a9c8b1; border-radius: 5px; }
+        button {
+            background: #32734a; color: white; border: 0;
+            padding: 9px 15px; border-radius: 5px; margin-left: 5px;
+        }
+        #result { margin-top: 18px; color: #27613c; }
+    </style>
+</head>
+<body>
+    <div class="grade-card">
+        <h2>Student Grading System</h2>
+        Enter Marks:
+        <input type="number" id="marks">
+        <button onclick="calculateGrade()">Check Grade</button>
+        <h3 id="result"></h3>
+    </div>
+    <script>
+        function calculateGrade() {
+            let marks = Number(document.getElementById("marks").value);
+            if (document.getElementById("marks").value === "") {
+                document.getElementById("result").innerHTML = "Please enter marks";
+            }
+            else if (marks < 0 || marks > 100) {
+                document.getElementById("result").innerHTML = "Invalid marks";
+            }
+            else if (marks >= 90) {
+                document.getElementById("result").innerHTML = "Grade A+";
+            }
+            else if (marks >= 80) {
+                document.getElementById("result").innerHTML = "Grade A";
+            }
+            else if (marks >= 70) {
+                document.getElementById("result").innerHTML = "Grade B";
+            }
+            else if (marks >= 60) {
+                document.getElementById("result").innerHTML = "Grade C";
+            }
+            else if (marks >= 40) {
+                document.getElementById("result").innerHTML = "Grade D";
+            }
+            else {
+                document.getElementById("result").innerHTML = "Fail";
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+Practical 4. Functions, Scope, Closures and Exception Handling
+Aim: To implement different types of JavaScript functions, understand scope and closures, and demonstrate exception handling using try-catch through a palindrome checker.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Palindrome Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3effa;
+            color: #40345a;
+            padding: 30px;
+        }
+        .pal-card {
+            max-width: 430px;
+            margin: 25px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px #d9d0e8;
+            text-align: center;
+        }
+        h2 { color: #6c52a0; }
+        input { padding: 10px; border: 1px solid #b8a9d1; border-radius: 5px; }
+        button {
+            padding: 10px 17px; background: #6c52a0; color: white;
+            border: 0; border-radius: 5px; cursor: pointer;
+        }
+        #result { color: #563d88; }
+    </style>
+</head>
+<body>
+    <div class="pal-card">
+        <h2>Palindrome Checker</h2>
+        Enter a Word:
+        <input type="text" id="word">
+        <button onclick="checkPalindrome()">Check</button>
+        <h3 id="result"></h3>
+    </div>
+    <script>
+        function checkPalindrome() {
+            try {
+                let word = document.getElementById("word").value;
+                if (word === "") {
+                    throw "Please enter a word";
+                }
+                let reverse = "";
+                for (let i = word.length - 1; i >= 0; i--) {
+                    reverse = reverse + word[i];
+                }
+                if (word.toLowerCase() === reverse.toLowerCase()) {
+                    document.getElementById("result").innerHTML = "It is a Palindrome";
+                }
+                else {
+                    document.getElementById("result").innerHTML = "It is not a Palindrome";
+                }
+            }
+            catch (error) {
+                document.getElementById("result").innerHTML = error;
+            }
+        }
+
+        let greet = function() {
+            console.log("Welcome to JavaScript");
+        };
+
+        let square = (num) => num * num;
+
+        function outerFunction() {
+            let message = "Hello";
+            function innerFunction() {
+                return message;
+            }
+            return innerFunction;
+        }
+        let result = outerFunction();
+        console.log(result());
+    </script>
+</body>
+</html>
+
+
+
+Practical 5. Array Methods and Object Handling
+Aim: To implement JavaScript array methods and object handling by developing a shopping cart total calculator with discount logic.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shopping Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #27364a;
+            padding: 25px;
+        }
+        .cart {
+            max-width: 520px;
+            margin: 20px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-top: 5px solid #4776a8;
+            box-shadow: 0 3px 12px #d6dee8;
+        }
+        h2 { color: #315f8d; }
+        button {
+            background: #315f8d; color: white; border: 0;
+            padding: 10px 17px; border-radius: 5px;
+        }
+        #result { line-height: 1.7; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="cart">
+        <h2>Shopping Cart</h2>
+        <button onclick="calculateBill()">Calculate Bill</button>
+        <div id="result"></div>
+    </div>
+    <script>
+        let cart = [
+            { name: "Laptop", price: 50000, quantity: 1 },
+            { name: "Mouse", price: 500, quantity: 2 },
+            { name: "Keyboard", price: 1000, quantity: 1 }
+        ];
+
+        function calculateBill() {
+            let total = cart.reduce((sum, item) => {
+                return sum + (item.price * item.quantity);
+            }, 0);
+
+            let discount = 0;
+            if (total >= 50000) {
+                discount = total * 0.10;
+            }
+            else if (total >= 20000) {
+                discount = total * 0.05;
+            }
+
+            let finalAmount = total - discount;
+            let output = "<h3>Products:</h3>";
+
+            cart.map(item => {
+                output += item.name + " - ₹" + item.price +
+                    " x " + item.quantity + "<br>";
+            });
+
+            output += "<br>Total: ₹" + total;
+            output += "<br>Discount: ₹" + discount;
+            output += "<br>Final Amount: ₹" + finalAmount;
+            document.getElementById("result").innerHTML = output;
+        }
+    </script>
+</body>
+</html>
+
+
+
+Practical 6. String Functions and Regular Expressions
+Aim: To use JavaScript string functions and regular expressions for email validation, data extraction and text analysis.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>String and RegEx</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff3f1;
+            color: #503c3a;
+            padding: 25px;
+        }
+        .analysis-box {
+            max-width: 490px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #edc9c3;
+        }
+        h2 { color: #a34e45; }
+        input {
+            width: 95%; padding: 9px; margin: 7px 0 13px;
+            border: 1px solid #d9aaa3; border-radius: 5px;
+        }
+        button {
+            background: #a34e45; color: white; border: 0;
+            padding: 10px 17px; border-radius: 5px;
+        }
+        #result { line-height: 1.7; }
+    </style>
+</head>
+<body>
+    <div class="analysis-box">
+        <h2>String and RegEx Operations</h2>
+        Enter Email:
+        <input type="text" id="email">
+        Enter Text:
+        <input type="text" id="text">
+        <button onclick="analyze()">Analyze</button>
+        <h3 id="result"></h3>
+    </div>
+    <script>
+        function analyze() {
+            let email = document.getElementById("email").value;
+            let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            let emailResult;
+
+            if (pattern.test(email)) {
+                emailResult = "Valid Email";
+            }
+            else {
+                emailResult = "Invalid Email";
+            }
+
+            let text = document.getElementById("text").value;
+            let characters = text.length;
+            let words = text.trim().split(/\s+/).length;
+            let numbers = text.match(/\d+/g);
+
+            if (numbers == null) {
+                numbers = "No numbers found";
+            }
+
+            document.getElementById("result").innerHTML =
+                "Email: " + emailResult +
+                "<br>Characters: " + characters +
+                "<br>Words: " + words +
+                "<br>Numbers: " + numbers;
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+Practical 7. DOM Traversal and Manipulation
+Aim: To perform DOM traversal and manipulation by developing a to-do list application with add, edit and delete operations.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f2e9;
+            color: #3f4035;
+            padding: 25px;
+        }
+        .todo {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            border-top: 5px solid #8a8750;
+        }
+        h2 { color: #77733d; }
+        input { padding: 9px; width: 58%; border: 1px solid #c9c6a6; border-radius: 5px; }
+        button {
+            padding: 8px 12px; margin: 4px;
+            background: #77733d; color: white; border: 0; border-radius: 4px;
+        }
+        li { padding: 7px 0; }
+    </style>
+</head>
+<body>
+    <div class="todo">
+        <h2>My To-Do List</h2>
+        <input type="text" id="task" placeholder="Enter a task">
+        <button onclick="addTask()">Add Task</button>
+        <ul id="taskList"></ul>
+    </div>
+    <script>
+        function addTask() {
+            let task = document.getElementById("task").value;
+            if (task === "") {
+                alert("Please enter a task");
+                return;
+            }
+
+            let li = document.createElement("li");
+            li.textContent = task;
+
+            let editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.onclick = function() {
+                let newTask = prompt("Enter new task:", li.firstChild.textContent);
+                if (newTask !== null && newTask.trim() !== "") {
+                    li.firstChild.textContent = newTask;
+                }
+            };
+
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.onclick = function() {
+                li.remove();
+            };
+
+            li.appendChild(editBtn);
+            li.appendChild(deleteBtn);
+            document.getElementById("taskList").appendChild(li);
+            document.getElementById("task").value = "";
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+Practical 8. Form Handling and Validation using JavaScript Events
+Aim: To access and validate form fields using JavaScript events by developing a gym admission form with live input validation.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gym Admission Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #edf5f3;
+            color: #29433e;
+            padding: 20px;
+        }
+        .form-card {
+            max-width: 470px;
+            margin: 15px auto;
+            padding: 24px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #cfdfda;
+        }
+        h2 { color: #347568; text-align: center; }
+        input, select {
+            width: 96%; padding: 8px; margin: 6px 0 12px;
+            border: 1px solid #b5cec7; border-radius: 5px;
+        }
+        button {
+            background: #347568; color: white; border: 0;
+            padding: 10px 18px; border-radius: 5px;
+        }
+        #nameMsg { font-size: 13px; color: #347568; }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h2>Gym Admission Form</h2>
+        <form onsubmit="return validateForm()">
+            Name:
+            <input type="text" id="name" oninput="validateName()">
+            <p id="nameMsg"></p>
+            Age:
+            <input type="number" id="age">
+            Email:
+            <input type="text" id="email">
+            Phone:
+            <input type="text" id="phone">
+            Membership:
+            <select id="membership">
+                <option value="">Select</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+        <h3 id="result"></h3>
+    </div>
+    <script>
+        function validateName() {
+            let name = document.getElementById("name").value;
+            if (name === "") {
+                document.getElementById("nameMsg").innerHTML = "Name is required";
+            }
+            else {
+                document.getElementById("nameMsg").innerHTML = "Valid name";
+            }
+        }
+
+        function validateForm() {
+            let name = document.getElementById("name").value;
+            let age = Number(document.getElementById("age").value);
+            let email = document.getElementById("email").value;
+            let phone = document.getElementById("phone").value;
+            let membership = document.getElementById("membership").value;
+            let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            let phonePattern = /^[0-9]{10}$/;
+
+            if (name.trim() === "") {
+                alert("Enter name");
+                return false;
+            }
+            if (age < 18 || age > 60 ||
+                document.getElementById("age").value === "") {
+                alert("Invalid age");
+                return false;
+            }
+            if (!emailPattern.test(email)) {
+                alert("Invalid email");
+                return false;
+            }
+            if (!phonePattern.test(phone)) {
+                alert("Invalid phone number");
+                return false;
+            }
+            if (membership === "") {
+                alert("Select membership");
+                return false;
+            }
+
+            document.getElementById("result").innerHTML =
+                "Admission Successful! Welcome " + name;
+            return false;
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+Practical 9. Local Storage and Session Storage
+Aim: To implement localStorage and sessionStorage in JavaScript to save user preferences such as website themes.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Theme Preference</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f2f6;
+            color: #303746;
+            padding: 35px;
+            text-align: center;
+        }
+        .theme-card {
+            max-width: 430px;
+            margin: 35px auto;
+            padding: 35px 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 13px #d4d7df;
+        }
+        h2 { color: #53658b; }
+        button {
+            padding: 11px 18px; margin: 8px;
+            border: 0; border-radius: 6px;
+            background: #53658b; color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-card">
+        <h2>Choose Your Theme</h2>
+        <button onclick="changeTheme('light')">Light Mode</button>
+        <button onclick="changeTheme('dark')">Dark Mode</button>
+    </div>
+    <script>
+        function changeTheme(theme) {
+            localStorage.setItem("theme", theme);
+
+            if (theme === "dark") {
+                document.body.style.backgroundColor = "black";
+                document.body.style.color = "white";
+            }
+            else {
+                document.body.style.backgroundColor = "white";
+                document.body.style.color = "black";
+            }
+        }
+
+        window.onload = function() {
+            let savedTheme = localStorage.getItem("theme");
+            if (savedTheme !== null) {
+                changeTheme(savedTheme);
+            }
+        };
+    </script>
+</body>
+</html>
+Session Storage methods
+sessionStorage.setItem("name", "Sumira");
+let name = sessionStorage.getItem("name");
+sessionStorage.removeItem("name");
+sessionStorage.clear();
+Local Storage methods
+localStorage.setItem("name", "Sumira");
+let name = localStorage.getItem("name");
+localStorage.removeItem("name");
+localStorage.clear();
+
+
+
+
+Practical 10. Fetch API and jQuery
+Aim: To load and display JSON data using Fetch API and jQuery, and dynamically display the retrieved data in an HTML table.
+Complete HTML + CSS + JavaScript code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3f8;
+            color: #2d3e50;
+            padding: 30px;
+        }
+        .records {
+            max-width: 520px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #d1dce7;
+        }
+        h2 { color: #376b91; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #376b91; color: white; }
+        th, td { padding: 10px; border: 1px solid #b9c8d5; text-align: left; }
+        tr:nth-child(even) { background: #f0f5f9; }
+    </style>
+</head>
+<body>
+    <div class="records">
+        <h2>Student Records</h2>
+        <table>
+            <tr><th>Name</th><th>Age</th></tr>
+            <tbody id="result"></tbody>
+        </table>
+    </div>
+    <script>
+        fetch("data.json")
+        .then(response => response.json())
+        .then(data => {
+            let output = "";
+            data.forEach(student => {
+                output += "<tr>";
+                output += "<td>" + student.name + "</td>";
+                output += "<td>" + student.age + "</td>";
+                output += "</tr>";
+            });
+            document.getElementById("result").innerHTML = output;
+        })
+        .catch(error => {
+            console.log("Error:", error);
+        });
+    </script>
+</body>
+</html>
+Additional file / code
+JSON file (data.json)
+[
+    {
+        "name": "Sumira",
+        "age": 20
+    },
+    {
+        "name": "Rahul",
+        "age": 21
+    },
+    {
+        "name": "Amit",
+        "age": 22
+    }
+]
+jQuery getJSON example
+$.getJSON("data.json", function(data) {
+    console.log(data);
+});
