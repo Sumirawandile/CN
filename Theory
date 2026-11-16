@@ -1,0 +1,346 @@
+Practical 1
+Aim: Demonstrate inline, internal and external JavaScript, console methods, and display user information with a welcome message.
+Theory
+JavaScript is a client-side scripting language that adds behavior and interactivity to web pages. HTML defines the structure of a webpage, CSS controls its appearance, and JavaScript responds to actions such as clicking buttons or entering information. JavaScript instructions are executed by the browser's JavaScript engine.
+JavaScript can be included in three ways: inline, by placing code in an HTML event attribute such as onclick; internal, by writing code inside a script element in the HTML document; and external, by linking a separate .js file using the script src attribute. External JavaScript is generally preferred for larger programs because it separates code from markup and makes maintenance easier.
+The browser provides a Document Object Model (DOM), which represents the HTML page as a hierarchy of elements. JavaScript can locate an element using document.getElementById() and modify its displayed text using textContent. Event handlers execute code when the user performs an action, such as clicking a welcome button.
+The console is a debugging and information tool available in browser Developer Tools. console.log() prints general messages, console.info() provides informational output, console.warn() highlights warnings, console.error() reports errors, and console.table() displays arrays or objects in a tabular format. These methods help developers inspect program behavior.
+JavaScript Code
+JavaScript from index.html
+// Inline HTML event: onclick="alert('Welcome!')"
+ 
+function showInfo() {
+    document.getElementById("info").textContent = "Name: Student | Course: CSE";
+    console.log("Information displayed");
+    console.info("Info message");
+    console.warn("Warning message");
+    console.error("Error message");
+    console.table([{name:"Student", course:"CSE"}]);
+  }
+External file: script.js
+console.log("External JavaScript loaded");
+Input: Click the welcome button; load the page.
+Output: A welcome alert appears; user information is shown; console displays log/warning/error messages.
+Conclusion: The inline, internal and external JavaScript approaches and basic console methods were demonstrated.
+
+
+
+Practical 2
+Aim: Demonstrate var, let, const, template literals and destructuring through a user-input billing calculator.
+Theory
+JavaScript variables store values used during program execution. var declares a function-scoped variable, while let and const are block-scoped. A let variable can be reassigned; a const binding cannot be reassigned after initialization. Using let and const generally makes variable behavior easier to predict.
+Template literals are strings written between backticks. They allow variables and expressions to be inserted directly using ${...}, making messages and bills easier to construct. Destructuring is a syntax that extracts values from an object or array into separate variables, such as obtaining a product name and price from a product object.
+A billing calculator accepts information through HTML input fields. JavaScript reads the entered text using the DOM and the value property. Since input values are usually strings, Number() can convert numeric input before calculations. The amount is typically calculated by multiplying the unit price by the quantity, with any additional charges or discounts applied according to the program's rules.
+The program then updates an HTML output element to display the calculated bill. This practical demonstrates variables, basic arithmetic, object handling, user input, type conversion, and dynamic output generation through DOM manipulation.
+JavaScript Code
+JavaScript from index.html
+function bill() {
+  var shop = "My Shop";
+  let product = document.getElementById("product").value;
+  let price = Number(document.getElementById("price").value);
+  let qty = Number(document.getElementById("qty").value);
+  const TAX = 0.05;
+  if (!product.trim() || price <= 0 || qty <= 0) {
+    alert("Enter valid details"); return;
+  }
+  const item = {product, price, qty};
+  const {product: name, price: rate, qty: count} = item;
+  let total = rate * count * (1 + TAX);
+  document.getElementById("result").textContent =
+    `${shop}: ${name} | Total (5% tax): Rs. ${total.toFixed(2)}`;
+}
+Input: Product: Notebook; Price: 50; Quantity: 3.
+Output: The bill calculator displays a total of Rs. 150.
+Conclusion: Variables, template literals, destructuring and numeric calculations were implemented successfully.
+
+
+
+Practical 3
+Aim: Use control structures and form validation to implement a grading system based on user-entered marks.
+Theory
+Control structures determine which instructions execute and in what order. Conditional statements such as if, else if, and else allow JavaScript to make decisions based on logical conditions. Comparison operators, including >= and <=, help compare a student's marks against grade thresholds.
+Form validation checks whether user-entered information satisfies the required rules before processing it. A grading application should reject missing values, nonnumeric entries, and marks outside the allowed range. The trim() method can detect blank text input, while isNaN() can help identify values that are not valid numbers after conversion.
+Once the input is valid, the program evaluates conditions in descending order of grade thresholds. For example, the highest grade is assigned first, followed by lower grades. The order matters because a mark meeting a high threshold may also meet all the lower thresholds; the first matching branch is executed.
+JavaScript reads the marks from an HTML input field and displays either a grade or an error message using DOM properties such as textContent. This demonstrates conditional decision-making, input checking, and clear feedback to users.
+JavaScript Code
+JavaScript from index.html
+function grade() {
+  let value = document.getElementById("marks").value;
+  let marks = Number(value);
+  if (value === "" || isNaN(marks) || marks < 0 || marks > 100) {
+    document.getElementById("result").textContent = "Enter valid marks";
+    return;
+  }
+  let result;
+  if (marks >= 90) result = "A+";
+  else if (marks >= 75) result = "A";
+  else if (marks >= 50) result = "B";
+  else result = "Fail";
+  document.getElementById("result").textContent = "Grade: " + result;
+}
+Input: Marks: 82.
+Output: Grade: A (according to the program thresholds). Invalid marks show an error.
+Conclusion: Conditional statements and form validation successfully calculated student grades.
+
+Practical 4
+Aim: Demonstrate function types, scope, closures and try-catch using a palindrome checker.
+Theory
+A function is a reusable block of JavaScript statements designed to perform a specific task. Functions may be declared using the function keyword, assigned to variables as function expressions, or written using arrow-function syntax. Parameters receive input values, and return statements send results back to the calling code.
+Scope describes where a variable can be accessed. Variables declared inside a function are generally local to that function, while variables declared outside may be accessible from a broader scope. A closure occurs when an inner function retains access to variables from its enclosing function even after the outer function has finished executing.
+Exception handling helps a program respond to invalid input or unexpected conditions without failing abruptly. The try block contains operations that may cause an error, throw can create an error deliberately, and catch receives the error so that a useful message can be displayed.
+A palindrome is a word or sequence that reads the same forward and backward. The program normalizes the entered word, reverses it using string and array methods such as split(), reverse(), and join(), and compares the result with the original. Functions organize the logic, while validation and try-catch handle missing input.
+JavaScript Code
+JavaScript from index.html
+function check() { // Function declaration
+  try {
+    let word = document.getElementById("word").value.trim().toLowerCase();
+    if (!word) throw new Error("Enter a word");
+    const reverse = text => text.split("").reverse().join(""); // Arrow function
+    const message = function(value) { // Function expression
+      return value === reverse(value) ? "Palindrome" : "Not a palindrome";
+    };
+    function makePrefix() { // Closure example
+      let prefix = "Result: ";
+      return function(text) { return prefix + text; };
+    }
+    let format = makePrefix();
+    document.getElementById("result").textContent = format(message(word));
+  } catch (error) {
+    document.getElementById("result").textContent = error.message;
+  }
+}
+Input: Word: madam.
+Output: Palindrome (or equivalent success message). A blank word produces an error message.
+Conclusion: Functions, string operations and try-catch were used to check a palindrome.
+
+
+
+Practical 5
+Aim: Use array methods and objects to build a shopping cart with itemized bill and discount calculation.
+Theory
+An array is an ordered collection of values, and an object groups related information using named properties. A shopping cart can be represented as an array of product objects, where each product contains its name, unit price, and quantity. The push() method adds a new product object to the cart.
+Array iteration methods simplify processing multiple products. forEach() executes a function for every item and is useful for displaying individual product details. reduce() combines all array elements into a single accumulated value, making it suitable for computing the cart total. Each item's amount is calculated as price multiplied by quantity.
+Conditional logic can apply a discount when the total exceeds a specified threshold. A ternary operator provides a compact alternative to a simple if-else statement: it chooses one value when a condition is true and another when it is false. The final payable amount is obtained by subtracting the discount from the original total.
+The program accepts product information from HTML input fields and updates the displayed cart and bill through DOM manipulation. It illustrates arrays, objects, iteration, accumulation, arithmetic, and conditional discount calculation. Input validation prevents empty product names or nonpositive prices and quantities.
+JavaScript Code
+JavaScript from index.html
+let cart = [];
+function addItem() {
+  let name = document.getElementById("name").value;
+  let price = Number(document.getElementById("price").value);
+  let qty = Number(document.getElementById("qty").value);
+  if (name.trim() === "" || price <= 0 || qty <= 0) {
+    alert("Enter valid product details"); return;
+  }
+  let product = {name, price, qty};
+  cart.push(product);
+  let list = "";
+  cart.forEach(function(item) {
+    list += item.name + " - Rs. " + item.price + " x " + item.qty +
+      " = Rs. " + (item.price * item.qty) + "<br>";
+  });
+  document.getElementById("items").innerHTML = list;
+  document.getElementById("result").textContent = "";
+}
+function calculate() {
+  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  let discount = total > 100 ? total * 0.10 : 0;
+  document.getElementById("result").textContent =
+    "Total: Rs. " + total + " | Discount: Rs. " + discount +
+    " | Final Bill: Rs. " + (total - discount);
+}
+Input: Add Pen at Rs. 20, quantity 2; Book at Rs. 100, quantity 1.
+Output: Itemized cart: Pen = Rs. 40, Book = Rs. 100; total Rs. 140; 10% discount Rs. 14; final bill Rs. 126.
+Conclusion: Arrays, objects, iteration and discount calculations successfully generated a shopping bill.
+
+
+
+
+Practical 6
+Aim: Demonstrate string functions and regular expressions for email validation, data extraction and text analysis.
+Theory
+Strings are sequences of characters used to represent text in JavaScript. Common string methods include trim() to remove surrounding whitespace, toLowerCase() and toUpperCase() to change letter case, split() to divide text into parts, and includes() to check whether text contains a specified sequence. The length property reports the number of characters.
+Regular expressions, also called regex, are patterns used to search, validate, and extract text. For example, an email-validation pattern checks for a basic structure containing a name, an @ symbol, a domain, and a dot followed by a suffix. The test() method returns true or false depending on whether a string matches the pattern.
+Text analysis can include counting characters, counting words, and extracting numeric values. A text string can be split on whitespace using a regular expression to estimate the number of words. The match() method can find sequences of digits, while join() combines extracted matches into readable output.
+In this practical, JavaScript reads an email address and text from input fields, applies string operations and regular expressions, and displays validation and analysis results. A basic regex checks formatting only; it does not prove that an email address exists or can receive messages.
+JavaScript Code
+JavaScript from index.html
+function analyze() {
+  let email = document.getElementById("email").value.trim();
+  let text = document.getElementById("text").value.trim();
+  let valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  let domain = valid ? email.split("@")[1] : "N/A";
+  let words = text === "" ? 0 : text.split(/\s+/).length;
+  let numbers = text.match(/\d+/g) || [];
+  document.getElementById("result").textContent =
+    "Email valid: " + valid + " | Domain: " + domain +
+    " | Characters: " + text.length + " | Words: " + words +
+    " | Numbers: " + numbers.join(", ");
+}
+Input: Email: amit@gmail.com; Text: I have 2 pens and 15 books.
+Output: Email is valid; domain is gmail.com; 7 words; extracted numbers: 2, 15.
+Conclusion: String functions and regular expressions were used for validation and text analysis.
+
+
+
+Practical 7
+Aim: Perform DOM traversal and updates by implementing a to-do list with add, edit and delete operations.
+Theory
+The Document Object Model (DOM) is a tree-like representation of a webpage created by the browser from HTML. Each heading, input, button, and list item is represented by a node or element. JavaScript can access existing elements with methods such as getElementById() and modify their content or structure.
+DOM manipulation refers to changing the webpage dynamically. createElement() creates a new element, textContent sets its text, appendChild() attaches it to another element, and remove() deletes it from the DOM. These operations allow a to-do list to grow or shrink without reloading the webpage.
+DOM traversal means moving between related nodes in the tree. Properties such as parentElement, children, and firstChild help locate a node's parent or descendants. In a to-do list, each task can be represented by an li element containing task text and Edit and Delete buttons; the buttons are children of the task element.
+Event handling connects user actions to JavaScript functions. Clicking Add creates a task, clicking Edit changes the task text, and clicking Delete removes the relevant list item. Validation prevents empty tasks, while DOM updates make the changes visible immediately.
+JavaScript Code
+JavaScript from index.html
+function addTask() {
+  let task = document.getElementById("task").value;
+  if (task.trim() === "") { alert("Enter a task"); return; }
+  let li = document.createElement("li");
+  let span = document.createElement("span");
+  span.textContent = task + " ";
+  let edit = document.createElement("button");
+  edit.textContent = "Edit";
+  edit.onclick = function() {
+    let newTask = prompt("Edit task:", span.textContent.trim());
+    if (newTask !== null && newTask.trim() !== "") {
+      span.textContent = newTask + " ";
+    }
+  };
+  let del = document.createElement("button");
+  del.textContent = "Delete";
+  del.onclick = function() { del.parentElement.remove(); };
+  li.appendChild(span);
+  li.appendChild(edit);
+  li.appendChild(del);
+  document.getElementById("list").appendChild(li);
+  document.getElementById("task").value = "";
+}
+Input: Add: Study JS; Edit to: Study DOM; then Delete.
+Output: The task appears with Edit and Delete buttons, changes to Study DOM, and disappears when deleted.
+Conclusion: DOM creation, traversal and updates were implemented through a to-do list.
+
+
+
+Practical 8
+Aim: Access and validate form fields using events; build a gym admission form with live input checks.
+Theory
+An HTML form collects user information through controls such as text fields, number inputs, dropdowns, and buttons. JavaScript can read these controls using document.getElementById() and the value property. Form validation checks the entered information against rules before accepting it.
+JavaScript events represent occurrences such as typing, clicking, changing a field, or submitting a form. The oninput event occurs when an input value changes and can be used for live validation. The onsubmit event occurs when the form is submitted and can trigger a final check of all fields.
+In a gym admission form, the name should not be blank, the age should satisfy the minimum admission age, and the email should match a basic format. trim() helps reject whitespace-only names, Number() converts numeric input, logical operators combine conditions, and a regular expression can check email formatting.
+Validation messages are displayed beside fields using DOM manipulation and textContent. The submission handler checks every field again and displays either a success message or an instruction to correct errors. Returning false from an inline onsubmit handler prevents the browser's default submission in this classroom demonstration. Real applications must also validate data on the server.
+JavaScript Code
+JavaScript from index.html
+function checkName() {
+  let valid = document.getElementById("name").value.trim() !== "";
+  document.getElementById("nameError").textContent = valid ? "Valid" : "Name required";
+  return valid;
+}
+function checkAge() {
+  let age = document.getElementById("age").value;
+  let valid = age !== "" && Number.isInteger(Number(age)) && Number(age) >= 18;
+  document.getElementById("ageError").textContent = valid ? "Valid" : "Age must be 18 or above";
+  return valid;
+}
+function checkEmail() {
+  let email = document.getElementById("email").value;
+  let valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  document.getElementById("emailError").textContent = valid ? "Valid" : "Invalid email";
+  return valid;
+}
+function submitForm() {
+  let validName = checkName();
+  let validAge = checkAge();
+  let validEmail = checkEmail();
+  document.getElementById("result").textContent =
+    validName && validAge && validEmail ? "Admission Successful!" : "Please correct the errors.";
+  return false;
+}
+Input: Name: Amit; Age: 20; Email: amit@gmail.com.
+Output: Live messages show Valid for each field; Submit displays Admission Successful!
+Conclusion: Event-driven live form validation successfully checked gym admission details.
+
+
+
+Practical 9
+Aim: Implement localStorage and sessionStorage to save user preferences, including theme settings.
+Theory
+Web Storage is a browser feature that stores small amounts of information as key-value pairs. It is useful for remembering user preferences and temporary information without sending every change to a server. Both localStorage and sessionStorage store values as strings and are accessed through JavaScript.
+localStorage retains data across page refreshes and browser restarts until the data is removed, cleared, or otherwise deleted. sessionStorage retains data within a particular tab's page session, including page refreshes, and is normally cleared when that session ends. Thus, localStorage is suitable for a theme preference, while sessionStorage can hold temporary information such as a name.
+The setItem(key, value) method saves data, and getItem(key) retrieves it. removeItem(key) deletes one entry, whereas clear() removes all entries from the selected storage area. If a requested key is absent, getItem() returns null. Objects can be stored by converting them to JSON strings and parsed again when retrieved.
+In the theme-preference program, the selected light or dark mode is stored using localStorage and reapplied when the page loads. JavaScript updates the background and text colors through DOM style properties. A username is saved and retrieved using sessionStorage. Sensitive credentials should not be stored in Web Storage.
+JavaScript Code
+JavaScript from index.html
+function setTheme(theme) {
+  localStorage.setItem("theme", theme);
+  applyTheme(theme);
+}
+function applyTheme(theme) {
+  document.body.style.backgroundColor = theme === "dark" ? "black" : "white";
+  document.body.style.color = theme === "dark" ? "white" : "black";
+  document.getElementById("themeResult").textContent = "Current Theme: " + theme;
+}
+function resetTheme() {
+  localStorage.removeItem("theme");
+  applyTheme("light");
+}
+function saveName() {
+  let name = document.getElementById("name").value;
+  sessionStorage.setItem("name", name);
+  document.getElementById("nameResult").textContent = "Welcome " + name;
+}
+function clearName() {
+  sessionStorage.clear();
+  document.getElementById("nameResult").textContent = "Session cleared";
+}
+let savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+let savedName = sessionStorage.getItem("name");
+if (savedName !== null) {
+  document.getElementById("nameResult").textContent = "Welcome " + savedName;
+}
+Input: Click Dark Mode; enter Amit and click Save Name; refresh.
+Output: Dark theme persists after refresh; Welcome Amit remains in the same tab session.
+Conclusion: localStorage and sessionStorage successfully saved and retrieved user preferences.
+
+
+
+
+Practical 10
+Aim: Load JSON data using Fetch API and jQuery $.getJSON() and dynamically display the records in an HTML table.
+Theory
+JSON (JavaScript Object Notation) is a lightweight, text-based format for representing structured data. It uses objects with key-value pairs and arrays for collections of records. JSON is commonly used to exchange information between a browser and a server because it is readable and supported by many programming languages.
+The Fetch API is a built-in browser interface for making network requests. The fetch() function returns a Promise, representing an asynchronous result that becomes available later. A then() handler can process the response, and response.json() reads and parses the response body into JavaScript data. A catch() handler can process request or parsing failures.
+jQuery is a JavaScript library that simplifies tasks such as DOM manipulation, event handling, and AJAX requests. Its $.getJSON() method requests JSON data asynchronously and parses it for use in a callback function. Unlike fetch(), which is available natively in modern browsers, $.getJSON() requires the jQuery library to be loaded.
+AJAX is a technique for exchanging data asynchronously and updating part of a webpage without reloading the entire page. In this practical, both fetch() and $.getJSON() retrieve the same student records from a JSON file. JavaScript iterates through the records, creates or inserts table rows, and displays them using DOM manipulation. A local HTTP server such as Live Server helps avoid restrictions associated with requesting files from file:// pages.
+JavaScript Code
+Required data file: students.json (JSON, not JavaScript)
+[
+  {"name": "Amit", "age": 20},
+  {"name": "Riya", "age": 21}
+]
+JavaScript from index.html
+function displayData(data) {
+  let output = "";
+  data.forEach(function(student) {
+    output += "<tr><td>" + student.name + "</td><td>" + student.age + "</td></tr>";
+  });
+  document.getElementById("tableBody").innerHTML = output;
+}
+function loadFetch() {
+  fetch("students.json")
+    .then(response => response.json())
+    .then(data => {
+      displayData(data);
+      document.getElementById("status").textContent = "Loaded using Fetch";
+    })
+    .catch(error => alert("Error loading JSON"));
+}
+function loadJQuery() {
+  $.getJSON("students.json", function(data) {
+    displayData(data);
+    document.getElementById("status").textContent = "Loaded using jQuery";
+  }).fail(function() { alert("Error loading JSON"); });
+}
+Input: Click Using Fetch; then Using jQuery.
+Output: Both buttons display Amit (20) and Riya (21) in the student table.
+Conclusion: JSON records were retrieved by Fetch and jQuery and displayed dynamically.
