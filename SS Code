@@ -1,0 +1,347 @@
+Practical 1
+Aim: Demonstrate inline, internal and external JavaScript, console methods, and display user information with a welcome message.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>JavaScript Basics</h2>
+<p id="info"></p>
+<button onclick="alert('Welcome!')">Inline JS</button>
+<button onclick="showInfo()">Show Info</button>
+<script>
+  function showInfo() {
+    document.getElementById("info").textContent = "Name: Student | Course: CSE";
+    console.log("Information displayed");
+    console.info("Info message");
+    console.warn("Warning message");
+    console.error("Error message");
+    console.table([{name:"Student", course:"CSE"}]);
+  }
+</script>
+<script src="script.js"></script>
+</body></html>
+script.js
+console.log("External JavaScript loaded");
+
+Practical 2
+Aim: Demonstrate var, let, const, template literals and destructuring through a user-input billing calculator.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>Billing Calculator</h2>
+<input id="product" placeholder="Product">
+<input id="price" type="number" placeholder="Price">
+<input id="qty" type="number" placeholder="Quantity">
+<button onclick="bill()">Calculate</button>
+<p id="result"></p>
+<script>
+function bill() {
+  var shop = "My Shop";
+  let product = document.getElementById("product").value;
+  let price = Number(document.getElementById("price").value);
+  let qty = Number(document.getElementById("qty").value);
+  const TAX = 0.05;
+  if (!product.trim() || price <= 0 || qty <= 0) {
+    alert("Enter valid details"); return;
+  }
+  const item = {product, price, qty};
+  const {product: name, price: rate, qty: count} = item;
+  let total = rate * count * (1 + TAX);
+  document.getElementById("result").textContent =
+    `${shop}: ${name} | Total (5% tax): Rs. ${total.toFixed(2)}`;
+}
+</script></body></html>
+
+Practical 3
+Aim: Use control structures and form validation to implement a grading system based on user-entered marks.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>Student Grading</h2>
+<input id="marks" type="number" placeholder="Marks (0-100)">
+<button onclick="grade()">Check Grade</button>
+<p id="result"></p>
+<script>
+function grade() {
+  let value = document.getElementById("marks").value;
+  let marks = Number(value);
+  if (value === "" || isNaN(marks) || marks < 0 || marks > 100) {
+    document.getElementById("result").textContent = "Enter valid marks";
+    return;
+  }
+  let result;
+  if (marks >= 90) result = "A+";
+  else if (marks >= 75) result = "A";
+  else if (marks >= 50) result = "B";
+  else result = "Fail";
+  document.getElementById("result").textContent = "Grade: " + result;
+}
+</script></body></html>
+
+Practical 4
+Aim: Demonstrate function types, scope, closures and try-catch using a palindrome checker.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>Palindrome Checker</h2>
+<input id="word" placeholder="Enter a word">
+<button onclick="check()">Check</button>
+<p id="result"></p>
+<script>
+function check() { // Function declaration
+  try {
+    let word = document.getElementById("word").value.trim().toLowerCase();
+    if (!word) throw new Error("Enter a word");
+    const reverse = text => text.split("").reverse().join(""); // Arrow function
+    const message = function(value) { // Function expression
+      return value === reverse(value) ? "Palindrome" : "Not a palindrome";
+    };
+    function makePrefix() { // Closure example
+      let prefix = "Result: ";
+      return function(text) { return prefix + text; };
+    }
+    let format = makePrefix();
+    document.getElementById("result").textContent = format(message(word));
+  } catch (error) {
+    document.getElementById("result").textContent = error.message;
+  }
+}
+</script></body></html>
+
+Practical 5
+Aim: Use array methods and objects to build a shopping cart with itemized bill and discount calculation.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>Shopping Cart</h2>
+<input id="name" placeholder="Product Name">
+<input id="price" type="number" placeholder="Price">
+<input id="qty" type="number" placeholder="Quantity">
+<button onclick="addItem()">Add Item</button>
+<button onclick="calculate()">Calculate Total</button>
+<h3>Cart Items</h3><div id="items"></div>
+<h3>Bill</h3><p id="result"></p>
+<script>
+let cart = [];
+function addItem() {
+  let name = document.getElementById("name").value;
+  let price = Number(document.getElementById("price").value);
+  let qty = Number(document.getElementById("qty").value);
+  if (name.trim() === "" || price <= 0 || qty <= 0) {
+    alert("Enter valid product details"); return;
+  }
+  let product = {name, price, qty};
+  cart.push(product);
+  let list = "";
+  cart.forEach(function(item) {
+    list += item.name + " - Rs. " + item.price + " x " + item.qty +
+      " = Rs. " + (item.price * item.qty) + "<br>";
+  });
+  document.getElementById("items").innerHTML = list;
+  document.getElementById("result").textContent = "";
+}
+function calculate() {
+  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  let discount = total > 100 ? total * 0.10 : 0;
+  document.getElementById("result").textContent =
+    "Total: Rs. " + total + " | Discount: Rs. " + discount +
+    " | Final Bill: Rs. " + (total - discount);
+}
+</script></body></html>
+
+Practical 6
+Aim: Demonstrate string functions and regular expressions for email validation, data extraction and text analysis.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>String and Regex</h2>
+<input id="email" placeholder="Email"><br><br>
+<textarea id="text" placeholder="Enter text"></textarea><br>
+<button onclick="analyze()">Analyze</button>
+<p id="result"></p>
+<script>
+function analyze() {
+  let email = document.getElementById("email").value.trim();
+  let text = document.getElementById("text").value.trim();
+  let valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  let domain = valid ? email.split("@")[1] : "N/A";
+  let words = text === "" ? 0 : text.split(/\s+/).length;
+  let numbers = text.match(/\d+/g) || [];
+  document.getElementById("result").textContent =
+    "Email valid: " + valid + " | Domain: " + domain +
+    " | Characters: " + text.length + " | Words: " + words +
+    " | Numbers: " + numbers.join(", ");
+}
+</script></body></html>
+
+Practical 7
+Aim: Perform DOM traversal and updates by implementing a to-do list with add, edit and delete operations.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>My To-Do List</h2>
+<input id="task" placeholder="Enter a task">
+<button onclick="addTask()">Add</button>
+<ul id="list"></ul>
+<script>
+function addTask() {
+  let task = document.getElementById("task").value;
+  if (task.trim() === "") { alert("Enter a task"); return; }
+  let li = document.createElement("li");
+  let span = document.createElement("span");
+  span.textContent = task + " ";
+  let edit = document.createElement("button");
+  edit.textContent = "Edit";
+  edit.onclick = function() {
+    let newTask = prompt("Edit task:", span.textContent.trim());
+    if (newTask !== null && newTask.trim() !== "") {
+      span.textContent = newTask + " ";
+    }
+  };
+  let del = document.createElement("button");
+  del.textContent = "Delete";
+  del.onclick = function() { del.parentElement.remove(); };
+  li.appendChild(span);
+  li.appendChild(edit);
+  li.appendChild(del);
+  document.getElementById("list").appendChild(li);
+  document.getElementById("task").value = "";
+}
+</script></body></html>
+
+Practical 8
+Aim: Access and validate form fields using events; build a gym admission form with live input checks.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>Gym Admission Form</h2>
+<form onsubmit="return submitForm()">
+  Name: <input id="name" oninput="checkName()">
+  <span id="nameError"></span><br><br>
+  Age: <input id="age" type="number" oninput="checkAge()">
+  <span id="ageError"></span><br><br>
+  Email: <input id="email" oninput="checkEmail()">
+  <span id="emailError"></span><br><br>
+  <button type="submit">Submit</button>
+</form>
+<p id="result"></p>
+<script>
+function checkName() {
+  let valid = document.getElementById("name").value.trim() !== "";
+  document.getElementById("nameError").textContent = valid ? "Valid" : "Name required";
+  return valid;
+}
+function checkAge() {
+  let age = document.getElementById("age").value;
+  let valid = age !== "" && Number.isInteger(Number(age)) && Number(age) >= 18;
+  document.getElementById("ageError").textContent = valid ? "Valid" : "Age must be 18 or above";
+  return valid;
+}
+function checkEmail() {
+  let email = document.getElementById("email").value;
+  let valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  document.getElementById("emailError").textContent = valid ? "Valid" : "Invalid email";
+  return valid;
+}
+function submitForm() {
+  let validName = checkName();
+  let validAge = checkAge();
+  let validEmail = checkEmail();
+  document.getElementById("result").textContent =
+    validName && validAge && validEmail ? "Admission Successful!" : "Please correct the errors.";
+  return false;
+}
+</script></body></html>
+
+Practical 9
+Aim: Implement localStorage and sessionStorage to save user preferences, including theme settings.
+index.html
+<!DOCTYPE html>
+<html><body>
+<h2>Theme Preferences</h2>
+<button onclick="setTheme('light')">Light Mode</button>
+<button onclick="setTheme('dark')">Dark Mode</button>
+<button onclick="resetTheme()">Reset Theme</button>
+<p id="themeResult"></p>
+<h3>Session Storage</h3>
+<input id="name" placeholder="Enter your name">
+<button onclick="saveName()">Save Name</button>
+<button onclick="clearName()">Clear Name</button>
+<p id="nameResult"></p>
+<script>
+function setTheme(theme) {
+  localStorage.setItem("theme", theme);
+  applyTheme(theme);
+}
+function applyTheme(theme) {
+  document.body.style.backgroundColor = theme === "dark" ? "black" : "white";
+  document.body.style.color = theme === "dark" ? "white" : "black";
+  document.getElementById("themeResult").textContent = "Current Theme: " + theme;
+}
+function resetTheme() {
+  localStorage.removeItem("theme");
+  applyTheme("light");
+}
+function saveName() {
+  let name = document.getElementById("name").value;
+  sessionStorage.setItem("name", name);
+  document.getElementById("nameResult").textContent = "Welcome " + name;
+}
+function clearName() {
+  sessionStorage.clear();
+  document.getElementById("nameResult").textContent = "Session cleared";
+}
+let savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+let savedName = sessionStorage.getItem("name");
+if (savedName !== null) {
+  document.getElementById("nameResult").textContent = "Welcome " + savedName;
+}
+</script></body></html>
+
+Practical 10
+Aim: Load JSON data using Fetch API and jQuery $.getJSON() and dynamically display the records in an HTML table.
+students.json
+[
+  {"name": "Amit", "age": 20},
+  {"name": "Riya", "age": 21}
+]
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JSON Practical</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+<h2>Student Records</h2>
+<button onclick="loadFetch()">Using Fetch</button>
+<button onclick="loadJQuery()">Using jQuery</button>
+<table border="1">
+  <tr><th>Name</th><th>Age</th></tr>
+  <tbody id="tableBody"></tbody>
+</table>
+<p id="status"></p>
+<script>
+function displayData(data) {
+  let output = "";
+  data.forEach(function(student) {
+    output += "<tr><td>" + student.name + "</td><td>" + student.age + "</td></tr>";
+  });
+  document.getElementById("tableBody").innerHTML = output;
+}
+function loadFetch() {
+  fetch("students.json")
+    .then(response => response.json())
+    .then(data => {
+      displayData(data);
+      document.getElementById("status").textContent = "Loaded using Fetch";
+    })
+    .catch(error => alert("Error loading JSON"));
+}
+function loadJQuery() {
+  $.getJSON("students.json", function(data) {
+    displayData(data);
+    document.getElementById("status").textContent = "Loaded using jQuery";
+  }).fail(function() { alert("Error loading JSON"); });
+}
+</script></body></html>
